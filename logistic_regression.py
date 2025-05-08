@@ -2,14 +2,14 @@ import numpy as np
 import math
 
 class LogisticRegression:
-    def init(self, learning_rate=0.01, num_iterations=1000):
+    def __init__(self, learning_rate=0.01, num_iterations=1000):
         self.learning_rate = learning_rate
         self.num_epochs = num_iterations
         self.weights = None
         self.bias = None
 
 
-    def sigmoid(z):
+    def sigmoid(self, z):
         return 1 / (1 + np.exp(-z))
 
     def train(self, train_x, train_y):
@@ -27,8 +27,8 @@ class LogisticRegression:
             db = (1 / n_samples) * np.sum(y_pred - train_y)
 
             #update w and b
-            self.weights -= self.lr * dw
-            self.bias -= self.lr * db
+            self.weights -= self.learning_rate * dw
+            self.bias -= self.learning_rate * db
 
     def predict(self, test_x):
         # get pred then sigmoid and clip to 0 or 1
