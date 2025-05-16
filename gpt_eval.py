@@ -14,20 +14,23 @@ model = GPT2LMHeadModel.from_pretrained("gpt2")
 model.eval()
 
 def classify_with_prompt(text):
-    prompt = f"Tweet: {text}\nSentiment (Positive or Negative):"
+    prompt = f"Given Tweet: '{text[0:50]}'\n - Tell me the sentiment (positive/negative):"
     inputs = tokenizer.encode(prompt, return_tensors="pt")
-    attention_mask = torch.ones_like(inputs)
-    outputs = model.generate(inputs, 
-                             attention_mask=attention_mask, 
-                             max_length=inputs.shape[1] + 5, 
-                             do_sample=False, 
-                             pad_token_id=tokenizer.eos_token_id)
-    output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    if "Positive" in output_text:
+    outputs = model.generate(
+        inputs,
+        max_length=inputs.shape[1] + 20,
+        do_sample=False,
+        pad_token_id=tokenizer.eos_token_id,
+    )
+    generated_text = tokenizer.decode(outputs[0][inputs.shape[1]:], skip_special_tokens=True).strip().lower()
+    print(f"Generated Text: '{generated_text}'")
+
+    
+    if "positive" in generated_text or "good" in generated_text or "happy" in generated_text or "pos" in generated_text:
         return 1
-    elif "Negative" in output_text:
+    elif "negative" in generated_text or "bad" in generated_text or "sad" in generated_text or "neg" in generated_text:
         return 0
-    return None
+    return None 
 
 #calassification
 preds = []
