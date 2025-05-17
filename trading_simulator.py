@@ -19,7 +19,7 @@ TARGET_STOCKS_FOR_MARKET_SENTIMENT = [
 MARKET_INDEX_TICKER = "^GSPC" # S&P 500
 
 BUY_THRESHOLD = 0.2  # If avg_daily_sentiment >= this, Buy
-SELL_THRESHOLD = -0.2 # If avg_daily_sentiment <= this, Sell
+SELL_THRESHOLD = 0 # If avg_daily_sentiment <= this, Sell
 
 def plot_average_daily_sentiment(daily_sentiment_df, model_type, start_date, end_date):
     plt.figure(figsize=(15, 5))
@@ -107,6 +107,7 @@ def run_market_simulation(start_date, end_date, model_type, initial_capital=100.
 
     daily_avg_sentiment_df = relevant_tweets.groupby(relevant_tweets['created_at'].dt.date)['sentiment_for_avg'].mean().reset_index()
     daily_avg_sentiment_df.rename(columns={'created_at': 'date', 'sentiment_for_avg': 'avg_daily_sentiment'}, inplace=True)
+    daily_avg_sentiment_df['avg_daily_sentiment'] = (daily_avg_sentiment_df['avg_daily_sentiment'] - 0.15) * 1.6
     daily_avg_sentiment_df['date'] = pd.to_datetime(daily_avg_sentiment_df['date'])
     print("Average daily market sentiments calculated.")
     plot_average_daily_sentiment(daily_avg_sentiment_df, model_type, start_date, end_date)
@@ -207,9 +208,9 @@ if __name__ == '__main__':
     SIM_END_DATE = "2020-07-15" # Extended end date for more data points
     
     # print("\n--- Running Market Simulation with Logistic Regression ---")
-    # run_market_simulation(SIM_START_DATE, SIM_END_DATE, model_type='logistic', tweet_sample_fraction=1)
-    print("\n--- Running Market Simulation with BERT ---")
-    run_market_simulation(SIM_START_DATE, SIM_END_DATE, model_type='bert', tweet_sample_fraction=0.01)
-    # print("\n--- Running Market Simulation with GPT-2 ---")
-    # run_market_simulation(SIM_START_DATE, SIM_END_DATE, model_type='gpt2', tweet_sample_fraction=0.01)
+    # run_market_simulation(SIM_START_DATE, SIM_END_DATE, model_type='logistic', tweet_sample_fraction=0.95)
+    # print("\n--- Running Market Simulation with BERT ---")
+    # run_market_simulation(SIM_START_DATE, SIM_END_DATE, model_type='bert', tweet_sample_fraction=0.01)
+    print("\n--- Running Market Simulation with GPT-2 ---")
+    run_market_simulation(SIM_START_DATE, SIM_END_DATE, model_type='gpt2', tweet_sample_fraction=0.025)
     print("\nAll market simulations complete.") 
